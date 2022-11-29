@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mirror.database.Mapper">
+<insert id="insertMember" parameterType="com.mirror.domain.memberVO">
+ insert into MEMBER values(member_seq.nextval, #{m_id}, #{m_pw}, #{m_nick})
+ </insert>
+ <select id="selectMember" parameterType="com.mirror.domain.memberVO" resultType="com.mirror.domain.memberVO">
+ select * from MEMBER where m_id=#{m_id} and m_pw=#{m_pw}
+ </select>
+ 
+ <update id="updateMember" parameterType="com.mirror.domain.memberVO">
+ update MEMBER set m_pw=#{m_pw}, m_nick=#{m_nick} where m_no=#{m_no}
+
+ </update>
+ 
+ <delete id="deleteMember" parameterType="com.mirror.domain.memberVO">
+ delete from MEMBER where m_no=#{m_no}
+ </delete>
+ 
+ <select id="selectAll" resultType="com.mirror.domain.memberVO">
+ select * from MEMBER
+ </select>
+ 
+
+
+<select id="selectPlace" parameterType="com.mirror.domain.placeVO" resultType="com.mirror.domain.placeVO">
+select * from place where p_region=#{p_region} and p_type=#{p_type}
+</select>
+ 
+ <select id="selectResult" parameterType="com.mirror.domain.placeVO" resultType="com.mirror.domain.placeVO">
+select p_no, p_name, p_info, p_lati, p_long, p_region, p_type from(select rownum rn , a.* from(select * from place where p_region=#{p_region} and p_type=#{p_type}) a ) b <![CDATA[where rn >= #{startNum} and rn <= #{endNum}]]> order by rn desc
+ </select>
+ 
+ 
+  <select id="selectPlaceByp_no" parameterType="com.mirror.domain.placeVO" resultType="com.mirror.domain.placeVO">
+ select * from PLACE where p_no=#{p_no}
+ </select>
+ 
+ 
+ <select id="selectTotalN" parameterType="com.mirror.domain.placeVO" resultType="java.lang.Integer">
+ select count(*) total from place where p_region=#{p_region} and p_type=#{p_type}
+ </select>
+ 
+ 
+ 
+ 
+<insert id="insertReply" parameterType="com.mirror.domain.replyVO">
+insert into reply values(reply_seq.nextval, #{m_no}, #{r_con}, sysdate, #{p_no})
+</insert>
+
+<select id="selectReply" parameterType="com.mirror.domain.replyVO" resultType="com.mirror.domain.replyVO">
+select r.r_no, m.m_no, m.m_nick, r.r_con, r.r_date, r.p_no from reply r, member m where r.m_no = m.m_no and p_no=${p_no}
+</select>
+
+<select id="selectReplyByOne" parameterType="com.mirror.domain.replyVO" resultType="com.mirror.domain.replyVO">
+select r_no, m_no, r_con, r_date, p_no from reply where m_no=#{m_no} order by r_no desc
+</select>
+
+
+<select id="selectReplyByr_no" parameterType="com.mirror.domain.replyVO" resultType="com.mirror.domain.replyVO">
+select * from reply where r_no=#{r_no} order by r_no desc
+</select>
+
+
+<update id="updateReply" parameterType="com.mirror.domain.replyVO">
+update reply set r_con=#{r_con}, r_date=sysdate where r_no=#{r_no}
+</update>
+
+
+
+<delete id="deleteReply" parameterType="com.mirror.domain.replyVO">
+delete from reply where r_no=#{r_no}
+</delete> 
+
+
+
+<select id="selectLove" parameterType="com.mirror.domain.loveVO" resultType="com.mirror.domain.loveVO">
+select * from love where m_no=#{m_no} and p_no=#{p_no}
+</select>
+
+<select id="totalLove" parameterType="java.lang.String" resultType="java.lang.String">
+select count(*) total from love where p_no=#{p_no}
+</select>
+<insert id="insertLove" parameterType="com.mirror.domain.loveVO" >
+insert into love values(#{m_no}, #{p_no})
+ </insert>
+ 
+ <select id="selectPlaceLove" parameterType="com.mirror.domain.memberVO" resultType="com.mirror.domain.placeLoveVO">
+ select m.m_no, m.m_nick, p.p_no,p.p_name , p.p_info, p.p_lati, p.p_long, p.p_region, p.p_type from member m , love l , place p where m.m_no=#{m_no} and m.m_no = l.m_no and l.p_no = p.p_no
+ </select>
+ 
+ <delete id="deleteLove" parameterType="com.mirror.domain.loveVO">
+ delete from love where m_no=#{m_no} and p_no=#{p_no}
+ </delete>
+ 
+ 
+ <select id="regionTotalLove" parameterType="java.lang.Integer" resultType="java.lang.String">
+ select a from (select count(p_region) a , p_region from love, place where love.p_no = place.p_no group by p_region) where p_region=#{p_region}
+ </select>
+ 
+ 
+
+
+
+
+
+
+</mapper>
